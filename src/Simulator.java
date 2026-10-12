@@ -2,11 +2,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.*;
 
 public class Simulator extends JPanel {
     private List<Animal> animals = new ArrayList<>(); // will contain all the animals in the scene
     private List<Zone> environment = new ArrayList<>(); // contains the environment
     private final Timer timer;
+
+    Stream<Animal> animalStream = animals.parallelStream();
+    Stream<Zone> enviromentStream = environment.parallelStream(); // parallel Streams derived from Animal and zones to improve efficiency by running them on different threads.
 
     public Simulator() {
 
