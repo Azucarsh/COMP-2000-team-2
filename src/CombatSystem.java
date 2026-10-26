@@ -32,16 +32,27 @@ public class CombatSystem {
                 dino.takeDamage(caveman.damage);
 
                 // find cavemen inside AlertRadius to join combat
-                for (int i = 0; i < animals.size(); i++) {
+              /*  for (int i = 0; i < animals.size(); i++) {
                     Animal other = animals.get(i);
 
                     if (other instanceof Caveman && other != caveman) {
                         Caveman ally = (Caveman) other;
                         double distance = caveman.getDistanceTo(ally);
-
+ 
                         if (distance <= Caveman.ALERT_RADIUS) {
                             dino.takeDamage(ally.damage);
-                            fighters.add(ally);
+                            fighters.add(ally); */
+
+                            List<Caveman> nearbyAllies = animals.parallelStream()
+                            .filter(other -> other instanceof Caveman && other != caveman)
+                            .map(other -> (Caveman) other)
+                            .filter(ally -> caveman.getDistanceTo(ally) <= Caveman.ALERT_RADIUS)
+                            .collect(Collectors.toList());
+            
+                        fighters.addAll(nearbyAllies);
+
+                        for (Caveman ally : nearbyAllies) {
+                            dino.takeDamage(ally.damage);
 
                             // ally change direction and go to the dinosaur
                             if (ally.x < dino.x) {

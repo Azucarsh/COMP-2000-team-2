@@ -95,6 +95,18 @@ public class Dinosaur extends Animal implements AnimalBehaviours {
         double minDistance = Double.MAX_VALUE;
 
         // Find nearest caveman from animal list
+        /*for (int i = 0; i < animals.size(); i++) {
+            Animal a = animals.get(i);
+            if (a instanceof Caveman && a.isDead() == false) {
+                double dist = this.getDistanceTo(a);
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    nearestCaveman = (Caveman) a;
+                }
+            }
+        }*/
+
+        // Find nearest caveman from animal list
         Caveman nearestCaveman = animals.stream()
         .filter(a -> a instanceof Caveman && !a.isDead())
         .map(a -> (Caveman) a)
