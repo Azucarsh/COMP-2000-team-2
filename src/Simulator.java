@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.awt.image.BufferedImage;
+import java.util.stream.*;
 
 public class Simulator extends JPanel {
     private List<Animal> animals = new ArrayList<>(); // will contain all the animals in the scene
@@ -15,6 +16,9 @@ public class Simulator extends JPanel {
 
     private final BufferedImage background =
         SpriteLoader.load("src/assets/background.png");
+
+    Stream<Animal> animalStream = animals.parallelStream();
+    Stream<Zone> enviromentStream = environment.parallelStream(); // parallel Streams derived from Animal and zones to improve efficiency by running them on different threads.
 
     public Simulator() {
 
