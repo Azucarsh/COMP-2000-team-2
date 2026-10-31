@@ -13,6 +13,7 @@ private static final BufferedImage sprite =
 
     private static Random rand = new Random();
     private int wanderTimer = 0;
+
     Cow() //default spawn
     {
         setStats();
@@ -48,6 +49,7 @@ private static final BufferedImage sprite =
     @Override
     public void createNest(){
     }
+    
 
    @Override
     public void draw(Graphics2D g2) {

@@ -2,12 +2,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.awt.image.BufferedImage;
 import java.util.stream.*;
 
 public class Simulator extends JPanel {
     private List<Animal> animals = new ArrayList<>(); // will contain all the animals in the scene
     private List<Zone> environment = new ArrayList<>(); // contains the environment
     private final Timer timer;
+    private List<Plant> plants = new ArrayList<>();
+    private final Random random = new Random();
+    private final int targetPlantCount = 12;
+
+    private final BufferedImage background =
+        SpriteLoader.load("src/assets/background.png");
 
     Stream<Animal> animalStream = animals.parallelStream();
     Stream<Zone> enviromentStream = environment.parallelStream(); // parallel Streams derived from Animal and zones to improve efficiency by running them on different threads.
@@ -26,7 +34,10 @@ public class Simulator extends JPanel {
         createCow(200, 300);
         createCow(100, 250);
         createCow(250, 100);
-
+        
+        for (int i = 0; i < targetPlantCount; i++) {
+            createPlant();
+}
         timer = new Timer(16, e -> {
             updateSimulation();
             repaint();
@@ -86,11 +97,20 @@ public class Simulator extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+       
+        if (background != null) {
+        g2.drawImage(background, 0, 0, getWidth(), getHeight(), null);
+}
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         for (int i = 0; i < environment.size(); i++) { // draws all elements in the environment
             environment.get(i).draw(g2);
         }
+
+        for (int i = 0; i < plants.size(); i++) {
+            plants.get(i).draw(g2);
+}
+
         for (int i = 0; i < animals.size(); i++) {
             animals.get(i).draw(g2);
         }
@@ -116,5 +136,14 @@ public class Simulator extends JPanel {
 
     public void createCow(int spawnX, int spawnY) {
         animals.add(new Cow(spawnX, spawnY));
+    }
+    private void createPlant() {
+    int panelWidth = getWidth() > 100 ? getWidth() : 1000;
+    int panelHeight = getHeight() > 100 ? getHeight() : 700;
+
+    int x = 30 + random.nextInt(Math.max(1, panelWidth - 90));
+    int y = 60 + random.nextInt(Math.max(1, panelHeight - 140));
+
+    plants.add(new Plant(x, y));
     }
 }
