@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.Map;
 
 public class Simulator extends JPanel {
     private List<Animal> animals = new ArrayList<>();
@@ -13,6 +14,7 @@ public class Simulator extends JPanel {
     private final Timer timer;
     private int grassSpawnTimer = 0;
     private Random rand = new Random();
+    private static final List<Class<? extends Animal>> SPECIES = List.of(Cow.class, Caveman.class, Dinosaur.class);
 
     public Simulator() {
         createDinosaur(150, 200);
@@ -60,6 +62,7 @@ public class Simulator extends JPanel {
                 grassList.add(new Grass(randomX, randomY));
                 grassSpawnTimer = 0;
             }
+            PopulationStats stats = animals.stream().collect(PopulationStats.collector(SPECIES));
         }
 
         // Lava kills animal and grass inside
@@ -131,6 +134,20 @@ public class Simulator extends JPanel {
         for (Animal animal : animals) {
             animal.draw(g2);
         }
+
+        // ...
+        PopulationStats stats = animals.stream().collect(PopulationStats.collector(SPECIES));
+
+        int yPos = 20;
+        g2.setColor(Color.BLACK);
+        g2.setFont(new Font("Arial", Font.BOLD, 12));
+        for (Map.Entry<Class<?>, Integer> e : stats.getCounts().entrySet()) {
+            g2.drawString(e.getKey().getSimpleName() + ": " + e.getValue(), 10, yPos);
+            yPos += 15;
+        }
+        g2.drawString("Grass: " + grassList.stream().filter(gr -> !gr.isEaten).count(), 10, yPos);
+        yPos += 15;
+        g2.drawString(String.format("Balance: %.1f / 100", stats.getBalance()), 10, yPos);
     }
 
     private Volcano getVolcano() {
