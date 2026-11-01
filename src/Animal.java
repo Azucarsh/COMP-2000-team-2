@@ -22,8 +22,14 @@ abstract class Animal { // parent class for all animals
     int width = 40;
     int height = 40;
 
-    // Quản lý State Pattern
+    public MovementStrategy getWanderStrategy() { return wanderStrategy; }
+    public MovementStrategy getHuntStrategy() { return huntStrategy; }
+    public void setWanderStrategy(MovementStrategy s) { this.wanderStrategy = s; }
+    public void setHuntStrategy(MovementStrategy s) { this.huntStrategy = s; }
+
     protected AnimalState currentState;
+    protected MovementStrategy wanderStrategy = new RandomWanderStrategy();
+    protected MovementStrategy huntStrategy = new RandomWanderStrategy();
 
     public Animal() {
         this.currentState = new WanderingState();
@@ -65,23 +71,21 @@ abstract class Animal { // parent class for all animals
 
     // dx/dy move toward a target
     public void moveToward(int targetX, int targetY) {
-        int step = Math.max(1, (int) speed);
-        // horizontal
+        int speed = (int) this.speed;
         if (targetX > x) {
-            dx = step; 
+            dx = speed;
         } else if (targetX < x) {
-            dx = -step;
+            dx = -speed;
         } else {
             dx = 0;
         }
 
-        // vertical
         if (targetY > y) {
-            dy = step; 
+            dy = speed;
         } else if (targetY < y) {
-            dy = -step;  
+            dy = -speed;
         } else {
-            dy = 0;   
+            dy = 0;
         }
     }
 

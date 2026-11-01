@@ -70,19 +70,17 @@ public class CombatSystem {
     }
 
     private static void cavemanCowCombat(Caveman caveman, Cow cow) {
-        if (!caveman.isHungry || caveman.attackCooldown > 0) {
-            return;
-        }
+        if (caveman.isHungry || caveman.attackCooldown == 0) {
+            // Caveman hits the cow (cows have 0 damage, no counter attack)
+            cow.takeDamage(caveman.damage);
+            caveman.attackCooldown = 30;
 
-        // Caveman hits the cow (cows have 0 damage, no counter attack)
-        cow.takeDamage(caveman.damage);
-        caveman.attackCooldown = 30;
-
-        if (cow.isDead()) {
-            caveman.hunger = Math.min(caveman.maxHunger, caveman.hunger + cow.foodValue);
-            caveman.isHungry = false;
-            caveman.starvationTimer = caveman.defaultStarvationTime;
-            cow.setState(new DeadState());
+            if (cow.isDead()) {
+                caveman.hunger = Math.min(caveman.maxHunger, caveman.hunger + cow.foodValue);
+                caveman.isHungry = false;
+                caveman.starvationTimer = caveman.defaultStarvationTime;
+                cow.setState(new DeadState());
+            }
         }
     }
 

@@ -1,11 +1,9 @@
 import java.awt.*;
-import java.util.List;
-import java.util.Comparator;
 
 public class Dinosaur extends Animal implements AnimalBehaviours {
 
     //Dinosaur stats can change later for balancing
-    private static float defaultHealth = 10f;
+    private static float defaultHealth = 16f;
     private static int defaultSpeed = 2;
     private static int defaultDamage = 2;
     private static int defaultMaxHunger = 800;
@@ -14,14 +12,15 @@ public class Dinosaur extends Animal implements AnimalBehaviours {
 
         Dinosaur () {
             setStats();
+            setStrategies();
             x = 0;
             y = 0;
-
         }
 
-        //constructor for reproduced dinosaurs, pass the position of the parent (or next to them)
+        //constructor for reproduced dinosaurs
         Dinosaur(int spawnX, int spawnY) {
             setStats();
+            setStrategies();
             x = spawnX;
             y = spawnY;
             width = 100;
@@ -32,8 +31,6 @@ public class Dinosaur extends Animal implements AnimalBehaviours {
     public void setStats(){
         this.health = defaultHealth;
         this.speed = defaultSpeed;
-        this.dx = (Math.random() < 0.5 ? -1 : 1) * defaultSpeed;
-        this.dy = (Math.random() < 0.5 ? -1 : 1) * defaultSpeed;
         this.hunger = defaultMaxHunger;
         this.maxHunger = defaultMaxHunger;
         this.foodValue = defaultFoodValue;
@@ -42,7 +39,12 @@ public class Dinosaur extends Animal implements AnimalBehaviours {
 
     @Override
     public void createNest(){
+    }
 
+    @Override
+    public void setStrategies() {
+        setWanderStrategy(new RandomWanderStrategy());
+        setHuntStrategy(new HuntStrategy(a -> a instanceof Caveman));
     }
 
     @Override
@@ -80,31 +82,5 @@ public class Dinosaur extends Animal implements AnimalBehaviours {
 
         // Stat
         drawStats(g2);
-    }
-
-    // if hungry => go to the nearest caveman
-    public void trackNearestCaveman(List<Animal> animals) {
-        if (this.isHungry == false) return;
-    
-        Caveman nearestCaveman = animals.stream()
-            .filter(a -> a instanceof Caveman && !a.isDead())
-            .map(a -> (Caveman) a)
-            .min(Comparator.comparingDouble(this::getDistanceTo))
-            .orElse(null);
-    
-        // go to nearest caveman
-        if (nearestCaveman != null) {
-            if (this.x < nearestCaveman.x) {
-                this.dx = Math.abs(this.speed > 0 ? (int)this.speed : 3);
-            } else {
-                this.dx = -Math.abs(this.speed > 0 ? (int)this.speed : 3);
-            }
-    
-            if (this.y < nearestCaveman.y) {
-                this.dy = Math.abs(this.speed > 0 ? (int)this.speed : 3);
-            } else {
-                this.dy = -Math.abs(this.speed > 0 ? (int)this.speed : 3);
-            }
-        }
     }
 }

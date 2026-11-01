@@ -13,13 +13,14 @@ public class Caveman extends Animal implements AnimalBehaviours{
 
     Caveman(){
         setStats();
-
+        setStrategies();
         x = 0;
         y = 0;
     }
 
     Caveman(int spawnX, int spawnY) {
         setStats();
+        setStrategies();
         x = spawnX;
         y = spawnY;
         width = 30;
@@ -31,8 +32,6 @@ public class Caveman extends Animal implements AnimalBehaviours{
     public void setStats(){
         this.health = defaultHealth;
         this.speed = defaultSpeed;
-        this.dx = (Math.random() < 0.5 ? -1 : 1) * defaultSpeed;
-        this.dy = (Math.random() < 0.5 ? -1 : 1) * defaultSpeed;
         this.hunger = defaultMaxHunger;
         this.maxHunger = defaultMaxHunger;
         this.foodValue = defaultFoodValue;
@@ -41,7 +40,12 @@ public class Caveman extends Animal implements AnimalBehaviours{
 
     @Override
     public void createNest(){
+    }
 
+    @Override
+    public void setStrategies() {
+        setWanderStrategy(new RandomWanderStrategy());
+        setHuntStrategy(new HuntStrategy(a -> a instanceof Cow));
     }
 
     @Override

@@ -3,6 +3,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Simulator extends JPanel {
     private List<Animal> animals = new ArrayList<>();
@@ -24,6 +26,9 @@ public class Simulator extends JPanel {
         createCow(200, 300);
         createCow(100, 250);
         createCow(250, 100);
+        createCow(400, 400);
+        createCow(450, 400);
+        createCow(300, 300);
         
         createVolcano(400, 300, 150, 0);
         createCave(300, 400);
@@ -79,7 +84,7 @@ public class Simulator extends JPanel {
         }
 
         // Check animal collision (Combat System)
-        for (int i = 0; i < animals.size(); i++) {
+        /*for (int i = 0; i < animals.size(); i++) {
             for (int j = i + 1; j < animals.size(); j++) {
                 Animal a = animals.get(i);
                 Animal b = animals.get(j);
@@ -88,6 +93,20 @@ public class Simulator extends JPanel {
                     CombatSystem.handleCollision(a, b, animals);
                 }
             }
+        }*/
+
+        // (read only) find every pair of animals collided
+        List<Animal[]> collisions = IntStream.range(0, animals.size()) 
+            .parallel()
+            .boxed()
+            .flatMap(i -> IntStream.range(i + 1, animals.size())
+                .filter(j -> animals.get(i).getBounds().intersects(animals.get(j).getBounds()))
+                .mapToObj(j -> new Animal[] { animals.get(i), animals.get(j) }))
+            .collect(Collectors.toList());
+
+        // resolve the fights one thread at a time -> fix race conditions
+        for (Animal[] pair : collisions) {
+            CombatSystem.handleCollision(pair[0], pair[1], animals);
         }
 
         // Remove dead animals

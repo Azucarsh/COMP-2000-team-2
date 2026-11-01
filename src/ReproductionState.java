@@ -46,7 +46,7 @@ public class ReproductionState implements AnimalState {
             }
 
             if (child != null) {
-                // newborns can't breed right away (also stops parent breeding with its own baby)
+                // newborns can't breed right away
                 child.reproductionCooldown = REPRODUCTION_COOLDOWN;
                 animals.add(child);
             }

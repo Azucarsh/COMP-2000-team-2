@@ -15,12 +15,14 @@ public class Cow extends Animal implements AnimalBehaviours {
 
     Cow() {
         setStats();
+        setStrategies();
         x = rand.nextInt(700);
         y = rand.nextInt(500);
     }
 
     Cow(int x, int y) {
         setStats();
+        setStrategies();
         this.x = x;
         this.y = y;
     }
@@ -29,8 +31,6 @@ public class Cow extends Animal implements AnimalBehaviours {
     public void setStats(){
         this.health = defaultHealth;
         this.speed = defaultSpeed;
-        this.dx = (rand.nextBoolean() ? -1 : 1) * (int) defaultSpeed;
-        this.dy = (rand.nextBoolean() ? -1 : 1) * (int) defaultSpeed;
         this.hunger = defaultMaxHunger;
         this.maxHunger = defaultMaxHunger;
         this.foodValue = defaultFoodValue;
@@ -39,6 +39,12 @@ public class Cow extends Animal implements AnimalBehaviours {
 
     @Override
     public void createNest(){}
+
+    @Override
+    public void setStrategies() {
+        setWanderStrategy(new RandomWanderStrategy());
+        setHuntStrategy(new GrazeStrategy());
+    }
 
     @Override
     public void draw(Graphics2D g2) {

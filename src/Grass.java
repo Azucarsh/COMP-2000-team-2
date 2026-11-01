@@ -3,7 +3,7 @@ import java.awt.*;
 public class Grass {
     public int x, y;
     public int size = 12;
-    public int foodValue = 250;
+    public int foodValue = 500;
     public boolean isEaten = false;
     public Grass(int x, int y) {
         this.x = x;
