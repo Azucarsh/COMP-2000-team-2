@@ -1,8 +1,9 @@
 import java.awt.*;
+import java.util.List;
 
 abstract class Animal { // parent class for all animals
     float health;
-    float reproductionCooldown;
+    float reproductionCooldown = 350;
     int damage;
     public int attackCooldown = 0;
     int hunger;
@@ -13,21 +14,36 @@ abstract class Animal { // parent class for all animals
     int defaultStarvationTime = 600;
 
     float speed;
-    int direction = Math.clamp(0, -1, 1);
+    int direction = 0;
     int x; // current x position
-    int y; // current y positino
+    int y; // current y position
     int dx; // direction or speed for x
     int dy; // direction or speed for y
 
     int width = 40;
     int height = 40;
 
+    // Quản lý State Pattern
+    protected AnimalState currentState;
+
+    public Animal() {
+        this.currentState = new WanderingState();
+    }
+
+    public void setState(AnimalState newState) {
+        this.currentState = newState;
+    }
+
     public void kill() {
         health = 0;
+        this.currentState = new DeadState();
     }
 
     public void takeDamage(float damage) {
         health -= damage;
+        if (health <= 0) {
+            this.currentState = new DeadState();
+        }
     }
 
     public boolean isDead() {
@@ -48,18 +64,28 @@ abstract class Animal { // parent class for all animals
         return Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
     }
 
-    public void update(int screenWidth, int screenHeight) {
+    // updateCore to call State
+    public void updateCore(int screenWidth, int screenHeight) {
         x += dx;
         y += dy;
 
-        if (x <= 0 || x >= screenWidth) {
+        if (x <= 0) {
+            x = 0;
+            dx = -dx;
+        } else if (x >= screenWidth - width) {
+            x = screenWidth - width;
             dx = -dx;
         }
-        if (y <= 0 || y >= screenHeight) {
+    
+        if (y <= 0) {
+            y = 0;
+            dy = -dy;
+        } else if (y >= screenHeight - height) {
+            y = screenHeight - height;
             dy = -dy;
         }
 
-        // Hunger and dead logic
+        // Hunger logic
         if (hunger > 0) {
             hunger = hunger - 1; // count down hunger
         } else {
@@ -75,6 +101,15 @@ abstract class Animal { // parent class for all animals
             attackCooldown--;
         }
 
+        if (reproductionCooldown > 0) {
+            reproductionCooldown--;
+        }
+    }
+
+    public void update(int screenWidth, int screenHeight, List<Animal> animals, List<Grass> grassList) {
+        if (currentState != null) {
+            currentState.update(this, screenWidth, screenHeight, animals, grassList);
+        }
     }
 
     void draw(Graphics2D g2) {
