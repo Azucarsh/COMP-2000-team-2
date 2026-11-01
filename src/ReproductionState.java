@@ -10,7 +10,7 @@ public class ReproductionState implements AnimalState {
     @Override
     public void update(Animal animal, int screenWidth, int screenHeight, List<Animal> animals, List<Grass> grassList) {
 
-        // If hungry, food takes priority over breeding
+        // If hungry, eating over breeding
         if (animal.isHungry) {
             animal.setState(new HuntingState());
             return;

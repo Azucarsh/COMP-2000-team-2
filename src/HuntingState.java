@@ -8,25 +8,23 @@ public class HuntingState implements AnimalState {
             return;
         }
 
-        // Tùy theo loài mà định nghĩa mục tiêu tìm kiếm khi đói
+        // Find food base on animal species
         if (animal instanceof Dinosaur) {
             ((Dinosaur) animal).trackNearestCaveman(animals);
         } else if (animal instanceof Caveman) {
             trackNearestCow((Caveman) animal, animals);
         } else if (animal instanceof Cow && grassList != null) {
-            trackNearestGrass((Cow) animal, grassList); // Cow tìm cỏ ở đây!
+            trackNearestGrass((Cow) animal, grassList);
         }
 
-        // Gọi logic vật lý cốt lõi (di chuyển, đếm ngược starvationTimer)
+        // Call core logic (moving, starvation)
         animal.updateCore(screenWidth, screenHeight);
 
-        // Kiểm tra nếu quá thời gian starvation mà chết -> Chuyển sang DeadState
         if (animal.isDead()) {
             animal.setState(new DeadState());
         }
     }
 
-    // Logic Caveman tìm Cow
     private void trackNearestCow(Caveman caveman, List<Animal> animals) {
         Cow nearestCow = null;
         double minDistance = Double.MAX_VALUE;
@@ -47,14 +45,13 @@ public class HuntingState implements AnimalState {
         }
     }
 
-    // Logic Cow tìm Grass (Đã được kéo từ Cow.java vào đây để chuẩn State Pattern)
     private void trackNearestGrass(Cow cow, List<Grass> grassList) {
         Grass nearestGrass = null;
         double minDistance = Double.MAX_VALUE;
 
         for (Grass g : grassList) {
             if (!g.isEaten) {
-                // Tính khoảng cách từ Cow tới đốm cỏ g
+                // Caculate distance from cow to grass
                 double deltaX = cow.x - g.x;
                 double deltaY = cow.y - g.y;
                 double dist = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
@@ -70,7 +67,6 @@ public class HuntingState implements AnimalState {
             cow.dx = (cow.x < nearestGrass.x) ? Math.abs((int)cow.speed) : -Math.abs((int)cow.speed);
             cow.dy = (cow.y < nearestGrass.y) ? Math.abs((int)cow.speed) : -Math.abs((int)cow.speed);
 
-            // Nếu bò chạm vào cỏ -> Ăn cỏ, hồi phục hunger và thoát trạng thái đói
             if (cow.getBounds().intersects(nearestGrass.getBounds())) {
                 nearestGrass.isEaten = true;
                 cow.hunger = Math.min(cow.maxHunger, cow.hunger + nearestGrass.foodValue);
