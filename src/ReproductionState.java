@@ -4,7 +4,7 @@ public class ReproductionState implements AnimalState {
 
     private static final int MAX_POPULATION_PER_SPECIES = 12;
     private static final int REPRODUCTION_COOLDOWN = 600;
-    private static final int MIN_HUNGER_TO_BREED = 400;
+    private static final int MIN_HUNGER_TO_BREED = 200;
     private static final int BIRTH_HUNGER_COST = 200;
 
     @Override
@@ -31,10 +31,7 @@ public class ReproductionState implements AnimalState {
             return;
         }
 
-        // Move toward partner (fallback speed in case speed is 0)
-        int step = Math.max(1, (int) animal.speed);
-        animal.dx = (animal.x < partner.x) ? step : -step;
-        animal.dy = (animal.y < partner.y) ? step : -step;
+        animal.moveToward(partner.x, partner.y);
 
         animal.updateCore(screenWidth, screenHeight);
 

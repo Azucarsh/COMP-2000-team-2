@@ -11,6 +11,10 @@ public class CombatSystem {
             dinoCavemanCombat((Dinosaur) b, (Caveman) a, animals);
         } else if (a instanceof Dinosaur && b instanceof Dinosaur) {
             dinoDinoCombat((Dinosaur) a, (Dinosaur) b);
+        } else if (a instanceof Caveman && b instanceof Cow) {
+            cavemanCowCombat((Caveman) a, (Cow) b);
+        } else if (a instanceof Cow && b instanceof Caveman) {
+            cavemanCowCombat((Caveman) b, (Cow) a);
         }
     }
 
@@ -39,17 +43,7 @@ public class CombatSystem {
 
                 for (Caveman ally : nearbyAllies) {
                     dino.takeDamage(ally.damage);
-
-                    if (ally.x < dino.x) {
-                        ally.dx = Math.abs((int) ally.speed);
-                    } else {
-                        ally.dx = -Math.abs((int) ally.speed);
-                    }
-                    if (ally.y < dino.y) {
-                        ally.dy = Math.abs((int) ally.speed);
-                    } else {
-                        ally.dy = -Math.abs((int) ally.speed);
-                    }
+                    ally.moveToward(dino.x, dino.y);
                 }
             }
 
@@ -72,6 +66,23 @@ public class CombatSystem {
                 }
                 dino.setState(new DeadState());
             }
+        }
+    }
+
+    private static void cavemanCowCombat(Caveman caveman, Cow cow) {
+        if (!caveman.isHungry || caveman.attackCooldown > 0) {
+            return;
+        }
+
+        // Caveman hits the cow (cows have 0 damage, no counter attack)
+        cow.takeDamage(caveman.damage);
+        caveman.attackCooldown = 30;
+
+        if (cow.isDead()) {
+            caveman.hunger = Math.min(caveman.maxHunger, caveman.hunger + cow.foodValue);
+            caveman.isHungry = false;
+            caveman.starvationTimer = caveman.defaultStarvationTime;
+            cow.setState(new DeadState());
         }
     }
 

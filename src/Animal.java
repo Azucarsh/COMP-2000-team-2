@@ -14,7 +14,6 @@ abstract class Animal { // parent class for all animals
     int defaultStarvationTime = 600;
 
     float speed;
-    int direction = 0;
     int x; // current x position
     int y; // current y position
     int dx; // direction or speed for x
@@ -62,6 +61,28 @@ abstract class Animal { // parent class for all animals
         int deltaX = this.x - other.x;
         int deltaY = this.y - other.y;
         return Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
+    }
+
+    // dx/dy move toward a target
+    public void moveToward(int targetX, int targetY) {
+        int step = Math.max(1, (int) speed);
+        // horizontal
+        if (targetX > x) {
+            dx = step; 
+        } else if (targetX < x) {
+            dx = -step;
+        } else {
+            dx = 0;
+        }
+
+        // vertical
+        if (targetY > y) {
+            dy = step; 
+        } else if (targetY < y) {
+            dy = -step;  
+        } else {
+            dy = 0;   
+        }
     }
 
     // updateCore to call State

@@ -43,27 +43,37 @@ public class Simulator extends JPanel {
             zone.update();
         }
 
-        // Spawning grass
-        grassSpawnTimer++;
-        if (grassSpawnTimer >= 30) {
-            int randomX = 30 + rand.nextInt(Math.max(100, screenWidth - 60));
-            int randomY = 30 + rand.nextInt(Math.max(100, screenHeight - 60));
-            grassList.add(new Grass(randomX, randomY));
-            grassSpawnTimer = 0;
+        Volcano volcano = getVolcano();
+        boolean volcanoErupting = (volcano != null && volcano.errupting);
+
+        // Spawning grass (stops when volcano is erupting)
+        if (!volcanoErupting) {
+            grassSpawnTimer++;
+            if (grassSpawnTimer >= 30) {
+                int randomX = 30 + rand.nextInt(Math.max(100, screenWidth - 60));
+                int randomY = 30 + rand.nextInt(Math.max(100, screenHeight - 60));
+                grassList.add(new Grass(randomX, randomY));
+                grassSpawnTimer = 0;
+            }
         }
 
-        // Check volcano area to kill all animals inside
-        if (!environment.isEmpty() && environment.get(0) instanceof Volcano) {
-            Volcano volcano = (Volcano) environment.get(0);
+        // Lava kills animal and grass inside
+        if (volcanoErupting) {
             for (Animal a : animals) {
                 if (volcano.contains(a.x, a.y)) {
                     a.kill();
                 }
             }
+
+            for (Grass g : grassList) {
+                if (volcano.contains(g.x, g.y)) {
+                    g.isEaten = true;
+                }
+            }
         }
 
         // Update animals state
-        List<Animal> animalsCopy = new ArrayList<>(animals); // Tạo một bản sao danh sách để duyệt an toàn
+        List<Animal> animalsCopy = new ArrayList<>(animals); // Make a copy of animal list
         for (Animal a : animalsCopy) {
             a.update(screenWidth, screenHeight, animals, grassList);
         }
@@ -75,22 +85,6 @@ public class Simulator extends JPanel {
                 Animal b = animals.get(j);
 
                 if (a.getBounds().intersects(b.getBounds())) {
-                    // push animals out so they don't stuck together
-                    /*int pushDistance = 2;
-                    if (a.x < b.x) {
-                        a.x -= pushDistance;
-                        b.x += pushDistance;
-                    } else {
-                        a.x += pushDistance;
-                        b.x -= pushDistance;
-                    }
-                    if (a.y < b.y) {
-                        a.y -= pushDistance;
-                        b.y += pushDistance;
-                    } else {
-                        a.y += pushDistance;
-                        b.y -= pushDistance;
-                    }*/
                     CombatSystem.handleCollision(a, b, animals);
                 }
             }
@@ -118,6 +112,15 @@ public class Simulator extends JPanel {
         for (Animal animal : animals) {
             animal.draw(g2);
         }
+    }
+
+    private Volcano getVolcano() {
+        for (Zone zone : environment) {
+            if (zone instanceof Volcano) {
+                return (Volcano) zone;
+            }
+        }
+        return null;
     }
 
     public void createVolcano(int spawnX, int spawnY, int radius, int lavaRad) {
