@@ -138,7 +138,7 @@ public class Simulator extends JPanel {
         // ...
         PopulationStats stats = animals.stream().collect(PopulationStats.collector(SPECIES));
 
-        int yPos = 20;
+        int yPos = 300;
         g2.setColor(Color.BLACK);
         g2.setFont(new Font("Arial", Font.BOLD, 12));
         for (Map.Entry<Class<?>, Integer> e : stats.getCounts().entrySet()) {
